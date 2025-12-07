@@ -1,0 +1,20 @@
+﻿@page
+@model RealCalculatorModel
+@{
+    ViewData["Title"] = "Real Calculator";
+}
+
+<h1>Real Calculator</h1>
+
+<form method="post">
+    <div style="width: 300px; margin: auto;">
+        <input type="text" name="Display" value="@Model.Display" readonly style="width: 100%; font-size: 24px; text-align: right; margin-bottom: 10px;" />
+
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px;">
+            @foreach (var button in Model.Buttons)
+            {
+                <button type="submit" name="Button" value="@button" style="font-size: 18px; padding: 10px;">@button</button>
+            }
+        </div>
+    </div>
+</form>

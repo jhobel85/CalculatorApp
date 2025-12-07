@@ -1,0 +1,33 @@
+﻿@page
+@model CalculatorModel
+@{
+    ViewData["Title"] = "Calculator";
+}
+
+<h1>Calculator</h1>
+
+<form method="post">
+    <div>
+        <label>Number 1:</label>
+        <input type="number" name="Number1" value="@Model.Number1" />
+    </div>
+    <div>
+        <label>Number 2:</label>
+        <input type="number" name="Number2" value="@Model.Number2" />
+    </div>
+    <div>
+        <label>Operation:</label>
+        <select name="Operation">
+            <option value="Add" selected="@(Model.Operation == "Add" ? "selected" : null)">+</option>
+            <option value="Subtract" selected="@(Model.Operation == "Subtract" ? "selected" : null)">-</option>
+            <option value="Multiply" selected="@(Model.Operation == "Multiply" ? "selected" : null)">*</option>
+            <option value="Divide" selected="@(Model.Operation == "Divide" ? "selected" : null)">/</option>
+        </select>
+    </div>
+    <button type="submit">Calculate</button>
+</form>
+
+@if (Model.Result != null)
+{
+    <h2>Result: @Model.Result</h2>
+}
