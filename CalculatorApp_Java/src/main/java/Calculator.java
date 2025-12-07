@@ -83,8 +83,4 @@ public class Calculator {
         }
         return result;
     }
-
-    public static String getSplitPattern() {
-        return SPLIT_PATTERN;
-    }
 }
