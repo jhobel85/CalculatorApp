@@ -19,6 +19,13 @@ class CalculatorTest {
     }
 
     @Test
+    public void subtractNegativeNumber() {
+        Calculator calculator = new Calculator();
+        double result = calculator.calculate(-4, -2, Operator.MINUS);
+        assertEquals(-2, result);
+    }
+
+    @Test
     @DisplayName("Addition: 5 + 3 = 8")
     void testAdditionPositiveNumbers() {
         double result = calculator.calculate(5, 3, Operator.PLUS);

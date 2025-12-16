@@ -19,8 +19,30 @@ namespace CalculatorWebApp.Pages
             "C", "0", "=", "+"
         };
 
-        private double? _currentValue;
-        private static string _operation;
+        private double? CurrentValue
+        {
+            get {
+                var sessionValue = HttpContext.Session.GetString("CurrentValue");
+                return !string.IsNullOrEmpty(sessionValue) ? double.Parse(sessionValue) : null;
+            }
+            set {
+                if (value.HasValue)
+                    HttpContext.Session.SetString("CurrentValue", value.ToString());
+                else
+                    HttpContext.Session.Remove("CurrentValue");
+            }
+        }
+
+        private string Operation
+        {
+            get => HttpContext.Session.GetString("Operation");
+            set {
+                if (!string.IsNullOrEmpty(value))
+                    HttpContext.Session.SetString("Operation", value);
+                else
+                    HttpContext.Session.Remove("Operation");
+            }
+        }
 
         public void OnPost()
         {
@@ -28,34 +50,37 @@ namespace CalculatorWebApp.Pages
             if (Button == "C")
             {
                 Display = "0";
-                _currentValue = null;
-                _operation = null;
+                CurrentValue = null;
+                Operation = null;
                 return;
             }
 
             // Handle Equals (=) button
             if (Button == "=")
             {                
+                if (CurrentValue.HasValue && !string.IsNullOrEmpty(Operation))
+                {
                     double secondValue = double.Parse(Display);
                     PerformOperation(secondValue);
-                    _operation = null; // Clear the operation after calculation                
+                    Operation = null; // Clear the operation after calculation
+                }
                 return;
             }
 
             // Handle Operators (+, -, *, /)
             if ("+-*/".Contains(Button))
             {
-                if (_currentValue.HasValue)
+                if (CurrentValue.HasValue && !string.IsNullOrEmpty(Operation))
                 {
                     double secondValue = double.Parse(Display);
                     PerformOperation(secondValue);
                 }
                 else
                 {
-                    _currentValue = double.Parse(Display);
+                    CurrentValue = double.Parse(Display);
                 }
 
-                _operation = Button; // Store the current operation
+                Operation = Button; // Store the current operation
                 Display = "0"; // Clear the display for the next input
                 return;
             }
@@ -73,23 +98,23 @@ namespace CalculatorWebApp.Pages
 
         private void PerformOperation(double secondValue)
         {
-            switch (_operation)
+            switch (Operation)
             {
                 case "+":
-                    _currentValue += secondValue;
+                    CurrentValue += secondValue;
                     break;
                 case "-":
-                    _currentValue -= secondValue;
+                    CurrentValue -= secondValue;
                     break;
                 case "*":
-                    _currentValue *= secondValue;
+                    CurrentValue *= secondValue;
                     break;
                 case "/":
-                    _currentValue = secondValue != 0 ? _currentValue / secondValue : double.NaN;
+                    CurrentValue = secondValue != 0 ? CurrentValue / secondValue : double.NaN;
                     break;
             }
 
-            Display = _currentValue.ToString();
+            Display = CurrentValue.ToString();
         }
     }
 }
