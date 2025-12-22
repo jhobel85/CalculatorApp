@@ -1,18 +1,21 @@
 using System;
 using System.Windows.Forms;
-
     public partial class MainForm : Form
     {
-        private TextBox display;
+        private TextBox display = null!;
         private double result = 0;
         private string operation = "";
         private bool isOperationPerformed = false;
+        private readonly Calculator calculator = new();
 
         public MainForm()
         {
             Text = "Calculator";
             Width = 400;
-            Height = 500;
+            Height = 750;
+            AutoScaleMode = AutoScaleMode.Font;
+            FormBorderStyle = FormBorderStyle.FixedSingle;
+            MaximizeBox = false;
 
             InitializeComponents();
         }
@@ -23,10 +26,14 @@ using System.Windows.Forms;
             display = new TextBox
             {
                 Text = "0",
-                Dock = DockStyle.Top,
-                Font = new System.Drawing.Font("Arial", 24),
+                Location = new System.Drawing.Point(5, 5),
+                Size = new System.Drawing.Size(380, 70),
+                Font = new System.Drawing.Font("Arial", 26),
                 TextAlign = HorizontalAlignment.Right,
-                ReadOnly = true
+                ReadOnly = true,
+                BorderStyle = BorderStyle.FixedSingle,
+                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
+                Padding = new Padding(5, 0, 5, 0)
             };
             Controls.Add(display);
 
@@ -35,8 +42,18 @@ using System.Windows.Forms;
             {
                 RowCount = 5,
                 ColumnCount = 4,
-                Dock = DockStyle.Fill
+                Location = new System.Drawing.Point(5, 85),
+                Size = new System.Drawing.Size(390, 660),
+                AutoSize = false,
+                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom
             };
+            
+            // Set uniform row and column sizes
+            for (int i = 0; i < 5; i++)
+                panel.RowStyles.Add(new RowStyle(SizeType.Percent, 20f));
+            for (int i = 0; i < 4; i++)
+                panel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25f));
+            
             Controls.Add(panel);
 
             // Buttons
@@ -53,7 +70,8 @@ using System.Windows.Forms;
                 {
                     Text = label,
                     Dock = DockStyle.Fill,
-                    Font = new System.Drawing.Font("Arial", 18)
+                    Font = new System.Drawing.Font("Arial", 18),
+                    Margin = new Padding(2)
                 };
                 button.Click += Button_Click;
                 panel.Controls.Add(button);
@@ -107,25 +125,31 @@ using System.Windows.Forms;
         {
             double currentValue = double.Parse(display.Text);
 
-            switch (operation)
+            try
             {
-                case "+":
-                    result += currentValue;
-                    break;
-                case "-":
-                    result -= currentValue;
-                    break;
-                case "*":
-                    result *= currentValue;
-                    break;
-                case "/":
-                    if (currentValue != 0)
-                        result /= currentValue;
-                    else
-                        MessageBox.Show("Cannot divide by zero!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    break;
-            }
+                switch (operation)
+                {
+                    case "+":
+                        result = calculator.Add(result, currentValue);
+                        break;
+                    case "-":
+                        result = calculator.Subtract(result, currentValue);
+                        break;
+                    case "*":
+                        result = calculator.Multiply(result, currentValue);
+                        break;
+                    case "/":
+                        result = calculator.Divide(result, currentValue);
+                        break;
+                }
 
-            display.Text = result.ToString();
+                display.Text = result.ToString();
+            }
+            catch (System.DivideByZeroException ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                display.Text = "0";
+                result = 0;
+            }
         }
     }

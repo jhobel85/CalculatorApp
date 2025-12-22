@@ -2,38 +2,44 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-public class CalculatorModel : PageModel
+public class CalculatorModel(double number2) : PageModel
 {
+    private readonly Calculator calculator = new();
+
     [BindProperty]
     public double Number1 { get; set; }
 
     [BindProperty]
-    public double Number2 { get; set; }
+    public double Number2 { get; set; } = number2;
 
     [BindProperty]
-    public string Operation { get; set; }
+    public required string Operation { get; set; }
 
     public double? Result { get; set; }
 
     public void OnPost()
     {
-        switch (Operation)
+        try
         {
-            case "Add":
-                Result = Number1 + Number2;
-                break;
-            case "Subtract":
-                Result = Number1 - Number2;
-                break;
-            case "Multiply":
-                Result = Number1 * Number2;
-                break;
-            case "Divide":
-                if (Number2 != 0)
-                    Result = Number1 / Number2;
-                else
-                    ModelState.AddModelError("", "Cannot divide by zero.");
-                break;
+            switch (Operation)
+            {
+                case "Add":
+                    Result = calculator.Add(Number1, Number2);
+                    break;
+                case "Subtract":
+                    Result = calculator.Subtract(Number1, Number2);
+                    break;
+                case "Multiply":
+                    Result = calculator.Multiply(Number1, Number2);
+                    break;
+                case "Divide":
+                    Result = calculator.Divide(Number1, Number2);
+                    break;
+            }
+        }
+        catch (System.DivideByZeroException ex)
+        {
+            ModelState.AddModelError("", ex.Message);
         }
     }
 }

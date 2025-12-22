@@ -8,8 +8,17 @@ namespace CalculatorWebApp.Pages
         [BindProperty]
         public string Display { get; set; } = "0";
 
+        /// <summary>
+        /// Gets or set the button value that was clicked or selected.
+        /// This property is bound to the view and is required to have a value.
+        /// </summary>
         [BindProperty]
-        public string Button { get; set; }
+        public required string Button { get; set; }
+
+        public RealCalculatorModel(string button)
+        {
+            Button = button;
+        }
 
         public string[] Buttons { get; } = new string[]
         {
@@ -115,6 +124,17 @@ namespace CalculatorWebApp.Pages
             }
 
             Display = CurrentValue.ToString();
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is RealCalculatorModel model &&
+                   Button == model.Button;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Button);
         }
     }
 }
